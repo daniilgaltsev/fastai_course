@@ -1,0 +1,6 @@
+_proc/
+_docs/
+
+.gitattributes
+
+*.egg-info/

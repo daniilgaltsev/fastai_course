@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "miniai"
+  site-url: "https://daniilgaltsev.github.io/fastai_course"
+  description: ""
+  repo-branch: main
+  repo-url: "https://github.com/daniilgaltsev/fastai_course"
