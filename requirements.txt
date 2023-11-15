@@ -1,3 +1,9 @@
+ipykernel
 jupyterlab
 nbdev
 
+matplotlib
+torch
+numpy
+numba
+fastcore

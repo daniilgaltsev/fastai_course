@@ -1,6 +1,12 @@
+nbs/data
 _proc/
 _docs/
 
 .gitattributes
+.gitconfig
+.last_checked
 
+__pycache__/
 *.egg-info/
+
+.ipynb_checkpoints/
