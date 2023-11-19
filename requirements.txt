@@ -7,3 +7,7 @@ torch
 numpy
 numba
 fastcore
+
+datasets
+torchvision
+
