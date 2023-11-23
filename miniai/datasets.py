@@ -42,7 +42,7 @@ def show_image(im, ax=None, figsize=None, title=None, **kwargs):
     if ax is None:
         _, ax = plt.subplots(figsize=figsize)
 
-    ax.imshow(im)
+    ax.imshow(im, **kwargs)
     if title is not None:
         ax.set_title(title)
     ax.axis("off")

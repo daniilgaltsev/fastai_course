@@ -17,6 +17,7 @@ from torch import optim
 import torch.nn.functional as F
 
 from .conv import *
+from .datasets import *
 
 from fastprogress import progress_bar,master_bar
 
