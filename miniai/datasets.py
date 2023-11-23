@@ -11,6 +11,7 @@ from operator import itemgetter
 import fastcore.all as fc
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 from torch.utils.data import default_collate
 
 # %% ../nbs/05_datasets.ipynb 32

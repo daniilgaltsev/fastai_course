@@ -11,3 +11,5 @@ fastcore
 datasets
 torchvision
 
+fastprogress
+
