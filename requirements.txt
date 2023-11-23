@@ -13,3 +13,5 @@ torchvision
 
 fastprogress
 
+torcheval
+
