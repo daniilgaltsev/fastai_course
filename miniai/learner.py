@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['DataLoaders', 'to_cpu', 'identity', 'CancelFitException', 'CancelBatchException', 'CancelEpochException', 'with_cbs',
            'Learner', 'Callback', 'run_cbs', 'SingleBatchCB', 'TrainCB', 'DeviceCB', 'MetricsCB', 'ProgressCB',
-           'TrainLearner', 'MomentumLearner', 'lr_find']
+           'TrainLearner', 'MomentumLearner', 'LRFinderCB', 'lr_find']
 
 # %% ../nbs/09_learner.ipynb 2
 import math,torch,matplotlib.pyplot as plt
@@ -293,6 +293,31 @@ class MomentumLearner(TrainLearner):
 
 # %% ../nbs/09_learner.ipynb 62
 from torch.optim.lr_scheduler import ExponentialLR
+
+# %% ../nbs/09_learner.ipynb 64
+class LRFinderCB(Callback):
+    def __init__(self, mult=1.3, threshold=3.0): fc.store_attr()
+
+    def before_fit(self, learn):
+        self.lrs = []
+        self.losses = []
+        self.min = float("inf")
+        self.sched = ExponentialLR(learn.opt, self.mult)
+
+    def after_batch(self, learn):
+        if not learn.model.training:
+            raise CancelEpochException()
+        self.lrs.append(learn.opt.param_groups[0]["lr"])
+        loss = to_cpu(learn.loss).item()
+        self.losses.append(loss)
+        self.min = min(loss, self.min)
+        if math.isnan(loss) or loss > self.min * self.threshold:
+            raise CancelFitException()
+        self.sched.step()
+
+    def cleanup_fit(self, learn):
+        plt.plot(self.lrs, self.losses)
+        plt.xscale("log")
 
 # %% ../nbs/09_learner.ipynb 66
 @fc.patch
