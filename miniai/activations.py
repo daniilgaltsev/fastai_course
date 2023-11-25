@@ -10,7 +10,7 @@ from .datasets import *
 from .learner import *
 
 # %% auto 0
-__all__ = ['set_seed', 'Hook', 'Hooks', 'append_stats', 'get_hist', 'get_min']
+__all__ = ['set_seed', 'Hook', 'Hooks', 'HooksCallback', 'append_stats', 'get_hist', 'get_min', 'ActivationStats']
 
 # %% ../nbs/10_activations.ipynb 5
 def set_seed(seed):
@@ -52,7 +52,26 @@ class Hooks(list):
         for h in self:
             h.remove()
 
-# %% ../nbs/10_activations.ipynb 48
+# %% ../nbs/10_activations.ipynb 45
+class HooksCallback(Callback):
+    def __init__(self, hookfunc, mod_filter=fc.noop):
+        fc.store_attr()
+        super().__init__()
+    
+    def before_fit(self, learn):
+        modules = filter(self.mod_filter, learn.model.modules())
+        self.hooks = Hooks(modules, self.hookfunc)
+
+    def after_fit(self, learn):
+        self.hooks.remove()
+
+    def __iter__(self):
+        return iter(self.hooks)
+
+    def __len__(self):
+        return len(self.hooks)
+
+# %% ../nbs/10_activations.ipynb 51
 def append_stats(hook, mod, inp, outp, bins=30, min=0, max=10):
     if not hasattr(hook, "stats"):
         hook.stats = ([], [], [])
@@ -61,11 +80,37 @@ def append_stats(hook, mod, inp, outp, bins=30, min=0, max=10):
         hook.stats[1].append(to_cpu(outp.std()))
         hook.stats[2].append(to_cpu(outp).abs().histc(bins, min, max))
 
-# %% ../nbs/10_activations.ipynb 55
+# %% ../nbs/10_activations.ipynb 58
 def get_hist(h):
     return torch.stack(h.stats[2]).T.log1p()
 
-# %% ../nbs/10_activations.ipynb 57
+# %% ../nbs/10_activations.ipynb 60
 def get_min(h):
     hist = get_hist(h)
-    return hist[:2].sum(axis=0) / hist.sum(axis=0)
+    return hist[0:1].sum(axis=0) / hist.sum(axis=0)
+
+# %% ../nbs/10_activations.ipynb 62
+class ActivationStats(HooksCallback):
+    def __init__(self, mod_filter=fc.noop):
+        super().__init__(append_stats, mod_filter)
+
+    def color_dim(self, figsize=(10, 3)):
+        fig, ax = get_grid(len(self), figsize=figsize)
+        for ax, h in zip(ax.flat, self):
+            show_image(get_hist(h), ax, origin="lower")
+
+    def dead_chart(self, figsize=(10, 3)):
+        fig, ax = get_grid(len(self), figsize=figsize, sharey=True, sharex=True)
+        for ax, h in zip(ax.flat, self):
+            ax.plot(get_min(h))
+            ax.set_ylim(0, 1)
+            ax.set_axis_on()
+
+    def plot_stats(self, figsize=(10, 3)):
+        fig, ax = plt.subplots(1, 2, figsize=figsize)
+        for h in self:
+            for i in range(2):
+                ax[i].plot(h.stats[i])
+        ax[0].set_title("Means")
+        ax[1].set_title("Stds")
+        plt.legend(range(len(self)))
