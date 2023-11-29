@@ -13,11 +13,11 @@ from .learner import *
 __all__ = ['set_seed', 'Hook', 'Hooks', 'HooksCallback', 'append_stats', 'get_hist', 'get_min', 'ActivationStats']
 
 # %% ../nbs/10_activations.ipynb 5
-def set_seed(seed):
+def set_seed(seed, deterministic=True):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.use_deterministic_algorithms(True)
+    torch.use_deterministic_algorithms(deterministic)
 
 # %% ../nbs/10_activations.ipynb 33
 class Hook:

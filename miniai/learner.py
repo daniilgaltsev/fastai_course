@@ -81,6 +81,8 @@ class with_cbs:
 # %% ../nbs/09_learner.ipynb 38
 class Learner:
     def __init__(self, model, dls=(0,), loss_func=F.mse_loss, lr=0.1, cbs=None, opt_func=optim.SGD):
+        if cbs is None:
+            cbs = []
         fc.store_attr()
         for cb in cbs:
             cb.learn = self

@@ -5,6 +5,7 @@ __all__ = ['BaseSchedCB', 'BatchSchedCB', 'HasLearnCB', 'RecorderCB', 'EpochSche
 
 # %% ../nbs/12_accel_sgd.ipynb 1
 import torch
+import fastcore.all as fc
 
 from .datasets import *
 from .conv import *
@@ -19,14 +20,14 @@ class BaseSchedCB(Callback):
     def before_fit(self, learn):
         self.sched_instance = self.sched(learn.opt)
 
-    def _step(self):
+    def _step(self, learn):
         if learn.training:
             self.sched_instance.step()
 
 # %% ../nbs/12_accel_sgd.ipynb 40
 class BatchSchedCB(BaseSchedCB):
     def after_batch(self, learn):
-        self._step()
+        self._step(learn)
 
 # %% ../nbs/12_accel_sgd.ipynb 41
 class HasLearnCB(Callback):
@@ -59,4 +60,4 @@ class RecorderCB(Callback):
 # %% ../nbs/12_accel_sgd.ipynb 47
 class EpochSchedCB(BaseSchedCB):
     def after_epoch(self, learn):
-        self._step()
+        self._step(learn)
