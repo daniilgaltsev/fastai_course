@@ -60,10 +60,11 @@ def clean_mem():
 
 # %% ../nbs/11_initializing.ipynb 37
 class BatchTransformCB(Callback):
-    def __init__(self, transform): fc.store_attr()
+    def __init__(self, transform, on_train=True, on_valid=True): fc.store_attr()
 
     def before_batch(self, learn):
-        learn.batch = self.transform(learn.batch)
+        if (learn.training and self.on_train) or (not learn.training and self.on_valid):
+            learn.batch = self.transform(learn.batch)
 
 # %% ../nbs/11_initializing.ipynb 50
 class GeneralReLU(nn.Module):
