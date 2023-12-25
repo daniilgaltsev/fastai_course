@@ -218,7 +218,9 @@ class MetricsCB(Callback):
         self.log(to_log)
 
     def after_batch(self, learn):
-        x, y = to_cpu(learn.batch)
+        batch = to_cpu(learn.batch) 
+        x, y = batch[0], batch[1]
+        while isinstance(x, tuple): x = x[0]  # TODO: this is quite bad
         preds = to_cpu(learn.preds)
         loss = to_cpu(learn.loss)
         for m in self.metrics.values():

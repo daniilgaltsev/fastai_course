@@ -35,14 +35,16 @@ def show_image(im, ax=None, figsize=None, title=None, **kwargs):
         im = im.detach().cpu()
         if len(im.shape) == 3:
             im = im.permute(1, 2, 0)
-    elif not isinstance(im, np.ndarray):
+    elif not isinstance(im, np.ndarray) and im is not None:
         im = np.array(im)
-    if im.shape[-1] == 1:
-        im = im[..., 0]
+    if im is not None:
+        if im.shape[-1] == 1:
+            im = im[..., 0]
     if ax is None:
         _, ax = plt.subplots(figsize=figsize)
 
-    ax.imshow(im, **kwargs)
+    if im is not None:
+        ax.imshow(im, **kwargs)
     if title is not None:
         ax.set_title(title)
     ax.axis("off")

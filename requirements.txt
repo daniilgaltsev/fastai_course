@@ -15,3 +15,5 @@ fastprogress
 
 torcheval
 
+diffusers
+
