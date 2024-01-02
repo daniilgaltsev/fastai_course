@@ -263,10 +263,11 @@ class ProgressCB(Callback):
             self._update_graph(learn)
             
     def _update_graph(self, learn):
-        to_update = [[list(range(len(self.losses))), self.losses]]
-        if self.val_losses:
-            to_update.append([list(map(lambda step: (step+1)*len(learn.dls.train), range(len(self.val_losses)))), self.val_losses])
-        self.mb.update_graph(to_update)
+        if self.plot:
+            to_update = [[list(range(len(self.losses))), self.losses]]
+            if self.val_losses:
+                to_update.append([list(map(lambda step: (step+1)*len(learn.dls.train), range(len(self.val_losses)))), self.val_losses])
+            self.mb.update_graph(to_update)
 
 # %% ../nbs/09_learner.ipynb 54
 class TrainLearner(Learner):

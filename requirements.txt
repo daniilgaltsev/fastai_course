@@ -17,3 +17,5 @@ torcheval
 
 diffusers
 
+accelerate
+
