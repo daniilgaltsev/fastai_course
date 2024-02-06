@@ -23,3 +23,5 @@ timm
 wandb
 pytorch_fid
 
+seaborn
+
