@@ -65,10 +65,10 @@ class CapturePreds(Callback):
 
 # %% ../nbs/14_augment.ipynb 59
 def _rand_erase1(x, pct, xm, xs, mn, mx):
-    start_x = int(random.random() * (1 - pct) * xbs.shape[-2])
-    start_y = int(random.random() * (1 - pct) * xbs.shape[-1])
-    size_x = int(size * xbs.shape[-2])
-    size_y = int(size * xbs.shape[-1])
+    start_x = int(random.random() * (1 - pct) * x.shape[-2])
+    start_y = int(random.random() * (1 - pct) * x.shape[-1])
+    size_x = int(pct * x.shape[-2])
+    size_y = int(pct * x.shape[-1])
     init.normal_(x[:, :, start_x:start_x+size_x, start_y:start_y+size_y], mean=xm, std=xs)
     torch.clamp_(x, mn, mx)
 
