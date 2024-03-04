@@ -5,15 +5,25 @@ __all__ = ['abar', 'inv_abar', 'add_noise', 'collate_ddpm', 'dl_ddpm', 'timestam
            'heads_to_batch', 'batch_to_heads', 'SelfAttention', 'SelfAttention2D', 'lin', 'EmbResBlock', 'SaveModule',
            'SaveEmbResBlock', 'SaveConv', 'DownBlock', 'UpBlock', 'EmbUNetModel', 'ddim_step', 'sample', 'cond_sample']
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 4
+# %% ../nbs/28_diffusion-attn-cond.ipynb 3
+import math
+
+from fastprogress import progress_bar
+import fastcore.all as fc
+import torch
+from torch import nn,tensor
+
+from .learner import to_cpu
+
+# %% ../nbs/28_diffusion-attn-cond.ipynb 5
 def abar(t):
     return (t * (math.pi / 2)).cos() ** 2
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 5
+# %% ../nbs/28_diffusion-attn-cond.ipynb 6
 def inv_abar(x):
     return x.sqrt().acos() * (2 / math.pi)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 6
+# %% ../nbs/28_diffusion-attn-cond.ipynb 7
 def add_noise(x):
     device = x.device
     bs = x.shape[0]
@@ -28,22 +38,22 @@ def add_noise(x):
     xt = original_part + noise_part
     return (xt, t.to(device)), epsilon
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 7
+# %% ../nbs/28_diffusion-attn-cond.ipynb 8
 def collate_ddpm(b, fm_x="image"):
     return add_noise(default_collate(b)[fm_x])
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 8
+# %% ../nbs/28_diffusion-attn-cond.ipynb 9
 def dl_ddpm(ds, bs):
     return DataLoader(ds, batch_size=bs, collate_fn=collate_ddpm, num_workers=4)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 12
+# %% ../nbs/28_diffusion-attn-cond.ipynb 13
 def timestamp_embedding(tsteps, emb_dim, max_period=1000):
     mult = 1 / max_period ** torch.linspace(0, 1, emb_dim // 2, device=tsteps.device)
     emb_t = tsteps[:, None] * mult[None]
     emb = torch.cat((torch.sin(emb_t), torch.cos(emb_t)), dim=1)
     return emb
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 14
+# %% ../nbs/28_diffusion-attn-cond.ipynb 15
 def pre_conv(ni, nf, ks=3, stride=1, act=nn.SiLU, norm=None, bias=True):
     layers = []
 
@@ -55,14 +65,14 @@ def pre_conv(ni, nf, ks=3, stride=1, act=nn.SiLU, norm=None, bias=True):
 
     return nn.Sequential(*layers)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 16
+# %% ../nbs/28_diffusion-attn-cond.ipynb 17
 def upsample(nf):
     return nn.Sequential(
         nn.UpsamplingNearest2d(scale_factor=2),
         nn.Conv2d(nf, nf, kernel_size=3, padding=1)
     )
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 18
+# %% ../nbs/28_diffusion-attn-cond.ipynb 19
 def heads_to_batch(x, heads):
     bs, c, d = x.shape
     x = x.reshape(bs, c, heads, -1)  # (bs, c, heads, dh)
@@ -98,13 +108,13 @@ class SelfAttention(nn.Module):
         x = self.lin(x)
         return self.norm(init_x + x).transpose(1, 2)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 20
+# %% ../nbs/28_diffusion-attn-cond.ipynb 21
 class SelfAttention2D(SelfAttention):
     def forward(self, x):
         bs, c, h, w = x.shape
         return super().forward(x.reshape(bs, c, -1)).reshape(bs, c, h, w)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 22
+# %% ../nbs/28_diffusion-attn-cond.ipynb 23
 def lin(ni, nf, act=nn.SiLU, norm=None, bias=True):
     layers = []
 
@@ -115,7 +125,7 @@ def lin(ni, nf, act=nn.SiLU, norm=None, bias=True):
     layers.append(nn.Linear(ni, nf, bias=bias))
     return nn.Sequential(*layers)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 23
+# %% ../nbs/28_diffusion-attn-cond.ipynb 24
 class EmbResBlock(nn.Module):
     def __init__(self, n_emb, ni, nf=None, ks=3, act=nn.SiLU, norm=nn.BatchNorm2d, attn_channels=0):
         super().__init__()
@@ -147,7 +157,7 @@ class EmbResBlock(nn.Module):
         x = x + self.id_conv(init_x)
         return x + self.attention(x)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 25
+# %% ../nbs/28_diffusion-attn-cond.ipynb 26
 class SaveModule:
     def forward(self, x, *args, **kwargs):
         self.output = super().forward(x, *args, **kwargs)
@@ -159,7 +169,7 @@ class SaveEmbResBlock(SaveModule, EmbResBlock):
 class SaveConv(SaveModule, nn.Conv2d):
     ...
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 27
+# %% ../nbs/28_diffusion-attn-cond.ipynb 28
 class DownBlock(nn.Module):
     def __init__(self, n_emb, ni, nf, add_down=True, num_layers=1, attn_channels=0):
         super().__init__()
@@ -184,7 +194,7 @@ class DownBlock(nn.Module):
             self.output.append(self.down.output)
         return x
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 29
+# %% ../nbs/28_diffusion-attn-cond.ipynb 30
 class UpBlock(nn.Module):
     def __init__(self, n_emb, ni, prev_nf, nf, add_up=True, num_layers=2, attn_channels=0):
         super().__init__()
@@ -205,7 +215,7 @@ class UpBlock(nn.Module):
             x = block((torch.cat((x, ups[i]), dim=1), t))
         return self.up(x)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 31
+# %% ../nbs/28_diffusion-attn-cond.ipynb 32
 class EmbUNetModel(nn.Module):
     def __init__(self, in_channels=3, out_channels=3, nfs=(224, 448, 672, 896), num_layers=1, attn_channels=8, attn_start=1):
         super().__init__()
@@ -262,7 +272,7 @@ class EmbUNetModel(nn.Module):
 
         return x
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 40
+# %% ../nbs/28_diffusion-attn-cond.ipynb 41
 def ddim_step(x_t, noise, alpha_bar_t, alpha_bar_t_minus_1, beta_bar_t, beta_bar_t_minus_1, eta, clipv=2):
     # Equation (12)
     predicted_coef = alpha_bar_t_minus_1.sqrt()
@@ -278,7 +288,7 @@ def ddim_step(x_t, noise, alpha_bar_t, alpha_bar_t_minus_1, beta_bar_t, beta_bar
     x_t_minus_1 = predicted_coef * predicted_x0 + direction_to_x_t + random_noise
     return x_t_minus_1
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 41
+# %% ../nbs/28_diffusion-attn-cond.ipynb 42
 def sample(f, model, sz, steps, eta=1., return_process=False):
     ts = torch.linspace(0.99, 0, steps)
     device = next(model.parameters()).device
@@ -301,7 +311,7 @@ def sample(f, model, sz, steps, eta=1., return_process=False):
     if return_process: return process
     return to_cpu(x)
 
-# %% ../nbs/28_diffusion-attn-cond.ipynb 57
+# %% ../nbs/28_diffusion-attn-cond.ipynb 58
 def cond_sample(c, f, model, sz, steps, eta=1., return_process=False):
     ts = torch.linspace(0.99, 0, steps)
     device = next(model.parameters()).device
