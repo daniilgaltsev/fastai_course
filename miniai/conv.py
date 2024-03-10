@@ -13,17 +13,17 @@ from typing import Mapping
 from .training import *
 from .datasets import *
 
-# %% ../nbs/07_convolutions.ipynb 42
+# %% ../nbs/07_convolutions.ipynb 49
 def conv(ni, nf, ks=3, stride=2, act=True):
     result = nn.Conv2d(ni, nf, kernel_size=ks, stride=stride, padding=ks//2)
     if act:
         result = nn.Sequential(result, nn.ReLU())
     return result
 
-# %% ../nbs/07_convolutions.ipynb 47
+# %% ../nbs/07_convolutions.ipynb 54
 def_device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# %% ../nbs/07_convolutions.ipynb 48
+# %% ../nbs/07_convolutions.ipynb 55
 def to_device(x, device=def_device):
     if isinstance(x, torch.Tensor):
         return x.to(device=device)
@@ -31,6 +31,6 @@ def to_device(x, device=def_device):
         return {k: to_device(v, device) for k, v in x.items()}
     return type(x)(to_device(i, device) for i in x)
 
-# %% ../nbs/07_convolutions.ipynb 49
+# %% ../nbs/07_convolutions.ipynb 56
 def collate_device(b):
     return to_device(default_collate(b))

@@ -495,7 +495,7 @@
 - apply them batched
 - show the results for an image
 ###### notes
-- can probably numpify (numpyify?) im2col_conv more, but it's good enough for understanding what needs to be done for it to work TODO
+- can probably numpify (numpyify?) im2col_conv more, but it's good enough for understanding what needs to be done for it to work - ok, first, I'll try to deal with the last kernel loop since we can probably unroll it with a reshape - yeah, that worked, now deal with inner 2 loops with better indexing -  the loops copies into A\[r\] a block img\[:, i:i+k, j:j+k\], maybe there is a simple order - oh, yeah, it can just be flattened - not sure that the last 2 loops can be removed because of the overlapping windows, but maybe there is a numpy function that i don't know aobut
 - why am i getting the same result for the 2 diags? - i messed up names and didn't restart and rerun all
 ##### strides and padding
 - explain padding
