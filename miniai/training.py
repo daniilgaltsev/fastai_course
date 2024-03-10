@@ -27,10 +27,10 @@ class Dataset:
     def __getitem__(self, i):
         return self.x[i], self.y[i]
 
-# %% ../nbs/04_minibatch_training.ipynb 137
+# %% ../nbs/04_minibatch_training.ipynb 118
 from torch.utils.data import DataLoader, BatchSampler, RandomSampler, SequentialSampler
 
-# %% ../nbs/04_minibatch_training.ipynb 149
+# %% ../nbs/04_minibatch_training.ipynb 130
 def fit(epochs, model, opt, loss_func, dl_train, dl_valid):
     for e in range(epochs):
         model.train()
@@ -56,7 +56,7 @@ def fit(epochs, model, opt, loss_func, dl_train, dl_valid):
         print(f"Epoch {e}: loss={loss_acc/count:.4f}, accuracy={acc_acc/count:.2f}")
     return loss_acc / count, acc_acc / count
 
-# %% ../nbs/04_minibatch_training.ipynb 150
+# %% ../nbs/04_minibatch_training.ipynb 131
 def get_dls(ds_train, ds_valid, bs, **kwargs):
     dl_train = DataLoader(ds_train, batch_size=bs, shuffle=True, **kwargs)
     dl_valid = DataLoader(ds_valid, batch_size=bs*2, shuffle=False, **kwargs)

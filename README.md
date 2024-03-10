@@ -355,7 +355,7 @@
 - well, it also depends on the size of the tensor
 - ok, it doesn't break when i run through a script
 - i don't want to deal with it, so, i'll just ignore it and hope it does not cause problems later
-- oh, so, now that I decided to ignore it, it finally gave me an error ('RuntimeError('unable to open shared memory object <\/torch_50829_3284495858_2010> in read-write mode: Too many open files (24)')') - ok, that's something, but I'm still ignoring it TODO
+- oh, so, now that I decided to ignore it, it finally gave me an error ('RuntimeError('unable to open shared memory object <\/torch_50829_3284495858_2010> in read-write mode: Too many open files (24)')') - ok, that's something, but I'm still ignoring it - i copied the code from original nb and it still hangs - running original in colab works, mine too works in colab - i guess it's a problem with wsl and/or how i setup the environemnt
 
 ##### pytorch dataloader
 - create all of these using torch's 
