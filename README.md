@@ -550,7 +550,7 @@
 - fit it with mse (it is fiddly, might need to play around with reducing lr, optimizers)
 - show results vs originals
 ###### notes
-- the shape is different so need to remove padding at the end, and, probably, add it in the beginning for symmetry TODO
+- the shape is different so need to remove padding at the end, and, probably, add it in the beginning for symmetry
 
 
 ### 09_learner
