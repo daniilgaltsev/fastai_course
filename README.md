@@ -577,7 +577,7 @@
 - what's as_tuple?
 - i don't really like implicity passing arguments through object properties, but I guess I'll try it here
 - forgot to flatten the images in transformi
-- i should also add accuracy TODO
+- i should also add accuracy
 #### metrics
 - write and export Metric:
 	- init(self)
@@ -789,7 +789,7 @@
 - fit model with it
 - show the 3 charts
 ###### notes
-- why do we need \_hookfunc? TODO
+- why do we need \_hookfunc? - looked at their code and it's for running hookfunc during correct stages (train/val)
 
 
 ### 11_initializing
