@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['clean_ipython_hist', 'clean_tb', 'clean_mem', 'BatchTransformCB', 'GeneralReLU', 'plot_func', 'init_weights',
-           'lsuv_init', 'conv', 'get_model']
+           'lsuv_init', 'LsuvCB', 'conv', 'get_model']
 
 # %% ../nbs/11_initializing.ipynb 3
 import pickle,gzip,math,os,time,shutil,torch,matplotlib as mpl,numpy as np,matplotlib.pyplot as plt
@@ -112,7 +112,40 @@ def lsuv_init(model, m, m_in, xb):
     hook.remove()
             
 
-# %% ../nbs/11_initializing.ipynb 75
+# %% ../nbs/11_initializing.ipynb 70
+class LsuvCB(Callback):
+    def __init__(self):
+        super().__init__()
+        self.done = False
+
+    def reset(self, learn):
+        learn.lsuvcb_done = False
+
+    def before_fit(self, learn):
+        if not hasattr(learn, "lsuvcb_done"):
+            learn.lsuvcb_done = False
+        if not learn.training or learn.lsuvcb_done:
+            return
+
+        prev = None
+        weights = []
+        acts = []
+        for cur in learn.model.modules():
+            if prev and hasattr(prev, "weight"):
+                weights.append(prev)
+                if hasattr(cur, "weight"):
+                    acts.append(prev)
+                else:
+                    acts.append(cur)
+            prev = cur
+
+        to_init = list(zip(weights, acts))
+        xb = next(iter(learn.dls.train))[0].to(device=next(learn.model.parameters()).device)
+        for m, m_in in to_init:
+            lsuv_init(model, m, m_in, xb)
+        learn.lsuvcb_done = True
+
+# %% ../nbs/11_initializing.ipynb 81
 def conv(ni, nf, ks=3, stride=2, act=nn.ReLU, norm=None, bias=None):
     if bias is None:
         bias = not isinstance(norm, nn.BatchNorm2d)
@@ -125,7 +158,7 @@ def conv(ni, nf, ks=3, stride=2, act=nn.ReLU, norm=None, bias=None):
     result = nn.Sequential(*layers)
     return result
 
-# %% ../nbs/11_initializing.ipynb 77
+# %% ../nbs/11_initializing.ipynb 83
 def get_model(act=nn.ReLU, nfs=[1,8,16,32,64], norm=None, bias=None):
     layers = [conv(nfs[i], nfs[i+1], act=act, norm=norm, bias=bias) for i in range(len(nfs)-1)]
     model = nn.Sequential(*layers, conv(64, 10, act=False), nn.Flatten())

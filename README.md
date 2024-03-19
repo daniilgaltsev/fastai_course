@@ -912,7 +912,7 @@
 
 ### Homework
 
-- write LsuvCB  TODO
+- write LsuvCB
 
 
 
