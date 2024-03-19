@@ -860,7 +860,7 @@
 - fit the model and plot diagnostics
 ###### notes
 - why is there a dummy? - ah, it's for when we need the number of channels in batchnorm
-- ok, i've also noticed that i've messed up init_weights before (i passed leak to m instead of leak) but how did it still work, lol - now, it trains better TODO(refix previous leaks)
+- ok, i've also noticed that i've messed up init_weights before (i passed leak to m instead of leak) but how did it still work, lol - now, it trains better
 ##### batchnorm
 - write BatchNorm(nn.Module) (self.register_buffer)
 	- init(self, nf, mom, eps), update_stats, forward
