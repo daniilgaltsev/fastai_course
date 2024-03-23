@@ -920,7 +920,7 @@
 
 ## Lesson 18
 
-- (hw) create an automating annealer TODO
+- (hw) create an automated annealer
 - rewrite Learner's fit(self, n_epochs, train, valid, cbs, lr)
 - write patch lr_find(self:Learner, gamma, max_mult, start_lr, max_epochs)
 
@@ -1060,13 +1060,13 @@
 - maybe also write a random shuffle-copy or random swap TODO
 
 
-### Homework TODO
+### Homework
 
 - create your own schedulers that work with PyTorch's optimizers
 	- CosineAnnealing
-	- OneCycle
+	- OneCycle TODO
 	- make sure that they work correctly with the batch scheduler callback
-- try beating on 5, 20, 50 epochs regimes
+- try beating on 5, 20, 50 epochs regimes TODO
 
 
 
