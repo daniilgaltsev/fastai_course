@@ -986,7 +986,7 @@
 - run summary on a model
 - fit model
 ###### notes
-- the sizes didn't align until I change avg pool to also use ceil mode
+- the sizes didn't align until I changed avg pool to also use ceil mode
 - also, now cublas breaks because some operation does not support deterministic, it says to set an env variable, but I guess I'll just add an option to set seed to not be deterministic
 
 
@@ -1025,10 +1025,10 @@
 - (HW) try to beat 93.8 (w TTA 94.2) on val in 20 epochs
 - save the model (torch.save)
 ###### notes
-- also, if weight decay has less of an impact because we have only 'one' scale parameter, why not reweight to have a bigger penalty? TODO
+- also, if weight decay has less of an impact because we have only 'one' scale parameter, why not reweight to have a bigger penalty? - doesn't seem to have a substantial effect? if anything it might be better to not use wd at all
 - oh, i didn't use the largest model - that would explain the lower score
 - still not training well + training accuracy is low - maybe decrease the crop so that it's 'easier' and reduce lr by a bit since there is small spike in the loss graph (for both)
-- let's try adding batchnorm at the end since it's something jh's done, i believe - ok, yeah, the curves immediately look better - maybe also look at diagnostics for the last year TODO - also can probably increase lr again
+- let's try adding batchnorm at the end since it's something jh's done, i believe - ok, yeah, the curves immediately look better - maybe also look at diagnostics for the last layer TODO - also can probably increase lr again
 ##### tta
 - write and export CapturePreds(Callback)
 	- before_fit
