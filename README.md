@@ -1028,7 +1028,7 @@
 - also, if weight decay has less of an impact because we have only 'one' scale parameter, why not reweight to have a bigger penalty? - doesn't seem to have a substantial effect? if anything it might be better to not use wd at all
 - oh, i didn't use the largest model - that would explain the lower score
 - still not training well + training accuracy is low - maybe decrease the crop so that it's 'easier' and reduce lr by a bit since there is small spike in the loss graph (for both)
-- let's try adding batchnorm at the end since it's something jh's done, i believe - ok, yeah, the curves immediately look better - maybe also look at diagnostics for the last layer TODO - also can probably increase lr again
+- let's try adding batchnorm at the end since it's something jh's done, i believe - ok, yeah, the curves immediately look better - maybe also look at diagnostics for the last layer - also can probably increase lr again - noticed that used a wrong model
 ##### tta
 - write and export CapturePreds(Callback)
 	- before_fit
@@ -1057,7 +1057,7 @@
 - fit 2 models with this transform for 25 epochs
 - average their predictions and calculate accuracy
 ###### notes
-- maybe also write a random shuffle-copy or random swap TODO
+- maybe also write a random shuffle-copy or random swap
 
 
 ### Homework
