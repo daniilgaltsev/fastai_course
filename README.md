@@ -1064,9 +1064,9 @@
 
 - create your own schedulers that work with PyTorch's optimizers
 	- CosineAnnealing
-	- OneCycle TODO
+	- OneCycle
 	- make sure that they work correctly with the batch scheduler callback
-- try beating on 5, 20, 50 epochs regimes TODO
+- try beating on 5 (0.934, 0.219), 20 (0.943(0.945), 0.173), 50 (0.949, 0.163) epochs regimes TODO
 
 
 
