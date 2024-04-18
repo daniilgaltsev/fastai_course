@@ -34,8 +34,9 @@ class DataLoaders:
         return cls(*[
             DataLoader(
                 ds, batch_size=batch_size,
-                collate_fn=collate_dict(ds), num_workers=num_workers
-            ) for ds in dd.values()
+                collate_fn=collate_dict(ds), num_workers=num_workers,
+                shuffle=(idx==0)
+            ) for idx, ds in enumerate(dd.values())
         ])
 
 # %% ../nbs/09_learner.ipynb 23

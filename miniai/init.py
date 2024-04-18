@@ -106,16 +106,21 @@ def _lsuv_stats(hook, mod, inp, outp):
 def lsuv_init(model, m, m_in, xb):
     hook = Hook(m_in, _lsuv_stats)
     with torch.no_grad():
-        while model(xb) is not None and hook.mean.abs() > 1e-3 and (hook.std - 1).abs() > 1e-3:
-            m.weight /= hook.std
-            m.bias -= hook.mean
+        if m.bias is not None and m.weight is not None:
+            while model(xb) is not None and hook.mean.abs() > 1e-3 and (hook.std - 1).abs() > 1e-3:
+                m.weight /= hook.std
+                m.bias -= hook.mean
+        elif m.bias is None:
+            while model(xb) is not None and (hook.std - 1).abs() > 1e-3:
+                m.weight /= hook.std
     hook.remove()
             
 
 # %% ../nbs/11_initializing.ipynb 70
 class LsuvCB(Callback):
-    def __init__(self):
+    def __init__(self, weights=None, acts=None):
         super().__init__()
+        fc.store_attr()
         self.done = False
 
     def reset(self, learn):
@@ -127,22 +132,25 @@ class LsuvCB(Callback):
         if not learn.training or learn.lsuvcb_done:
             return
 
-        prev = None
-        weights = []
-        acts = []
-        for cur in learn.model.modules():
-            if prev and hasattr(prev, "weight"):
-                weights.append(prev)
-                if hasattr(cur, "weight"):
-                    acts.append(prev)
-                else:
-                    acts.append(cur)
-            prev = cur
+        if self.weights is None and self.acts is None:
+            prev = None
+            weights = []
+            acts = []
+            for cur in learn.model.modules():
+                if prev and hasattr(prev, "weight"):
+                    weights.append(prev)
+                    if hasattr(cur, "weight"):
+                        acts.append(prev)
+                    else:
+                        acts.append(cur)
+                prev = cur
+        else:
+            weights, acts = self.weights, self.acts
 
         to_init = list(zip(weights, acts))
         xb = next(iter(learn.dls.train))[0].to(device=next(learn.model.parameters()).device)
         for m, m_in in to_init:
-            lsuv_init(model, m, m_in, xb)
+            lsuv_init(learn.model, m, m_in, xb)
         learn.lsuvcb_done = True
 
 # %% ../nbs/11_initializing.ipynb 81

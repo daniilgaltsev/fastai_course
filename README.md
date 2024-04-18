@@ -1066,7 +1066,12 @@
 	- CosineAnnealing
 	- OneCycle
 	- make sure that they work correctly with the batch scheduler callback
-- try beating on 5 (0.934, 0.219), 20 (0.943(0.945), 0.173), 50 (0.949, 0.163) epochs regimes TODO
+- try beating on 5 (0.934/0.949, 0.219), 20 (0.943(0.945)/0.957, 0.173), 50 (0.949/0.958, 0.163) epochs regimes
+
+###### notes
+just noticed that i used flatten in model5
+wasn't passing shuffle=True in from_dd for train dataloader :)
+
 
 
 
