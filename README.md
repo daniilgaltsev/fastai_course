@@ -1090,7 +1090,7 @@ wasn't passing shuffle=True in from_dd for train dataloader :)
 - write get_model with it (+nn.dropout2d)
 - fit a model
 ###### notes
-- what if instead of delete we do the same random erase/copy/shuffle TODO
+- what if instead of delete we do the same random erase/copy/shuffle
 
 
 ### 15_ddpm
@@ -1141,7 +1141,7 @@ wasn't passing shuffle=True in from_dd for train dataloader :)
 #### sampling
 - show samples
 ### Homework
-- implement dropout2d (drop all channels) TODO
+- implement dropout2d (drop all channels)
 
 
 
