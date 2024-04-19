@@ -1210,7 +1210,7 @@ wasn't passing shuffle=True in from_dd for train dataloader :)
 ###### notes
 - oh, i didn't need to normalize before that (or rather, will use imagenet normalization and to simplify we will do it on the fly)
 ##### get intermediate representations
-- (hw) do it using hooks TODO
+- (hw) do it using hooks
 - write calc_features(imgs, target_layers=(18,25))
 #### optimizing an image with content loss
 - write ContentLossToTarget: init(self, target_im, target_layers), call(self, input_im)
